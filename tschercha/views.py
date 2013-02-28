@@ -15,15 +15,19 @@ class SearchForm(forms.Form):
     puter = forms.BooleanField(required=False)
     
 def search(data):
-    if data["puter"]:
+    if "puter" in data and data["puter"] in (True, "true"):
         dbPath = "database/Puter.db"
     else:
         dbPath = "database/Vallader.db"
     dbPath = os.path.join(os.path.dirname(__file__), dbPath)
     conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
+
+    if "term" in data and len(data["term"]) > 0:
+        query = data["term"]
+    else:
+        return []
     
-    query = data["term"]
     sql = "SELECT m, n FROM dicziunari WHERE m LIKE '%%%s%%' OR n LIKE '%%%s%%'" % (query, query)
     cursor.execute(sql)
     res = cursor.fetchall()
@@ -38,7 +42,12 @@ def tschercha(request):
         if form.is_valid():
             result = search(form.cleaned_data)
     else:
-        form = SearchForm()
+        if "term" in request.GET:
+            result = search(request.GET)
+            form = SearchForm(initial={"term":request.GET["term"],
+                                       "puter":"puter" in request.GET and request.GET["puter"] == "true"})
+        else:
+            form = SearchForm()
 
     return render(request, 'tschercha.html',
                   {'form': form, 'result':result,})

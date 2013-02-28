@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>Dicziunari Vd/Td</ShortName>
+  <Description>Dicziunari Vallader/Tudais-ch</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Url method="get"
+         type="text/html"
+     template="http://nerdtalk.ddns.info/tschercha/?puter=false&amp;term={searchTerms}"/>
+</OpenSearchDescription>
