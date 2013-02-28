@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %} Login {% endblock %}
+{% block content %}
+
+   <div id="text">
+        <table>
+          <form action="" method="post">
+          {% csrf_token %}
+            <tr>
+                <td><label for="username">Ütilisader:</label></td>
+                <td><input type="text" name="username" value="" id="username"></td>
+            </tr>
+            <tr>
+                <td><label for="password">Pled da clav:</label></td>
+                <td><input type="password" name="password" value="" id="password"></td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="Login" />
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}" /></td>
+            {% else %}
+                <input type="hidden" name="next" value="/" /></td>
+            {% endif %}
+            </tr>
+          </form>
+        </table>
+
+
+      {% if form.errors %}
+        <p class="error">User or password incorrect</p>
+      {% endif %}
+    </div>
+{% endblock %}
