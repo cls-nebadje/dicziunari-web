@@ -1,0 +1,3 @@
+[submodule "tschercha/database"]
+	path = tschercha/database
+	url = https://github.com/cls-nebadje/dicziunari.git
