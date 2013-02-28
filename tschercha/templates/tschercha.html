@@ -29,11 +29,15 @@
 	</form>
     
 	<h3>Resultats</h3>
-    <table class="result">
-    <tr><th class="result">Tudais-ch</th><th class="result">Rumantsch</th></tr>
-	{% for tud, rum in result %}
-		<tr><td class="result" align="right">{{tud}}</td><td class="result">{{rum}}<td>
-	{% endfor %}
-    </table>
+	{% ifequal result|length 0 %}
+		Am displascha - ingüns resultats :(
+	{% else %}
+	    <table class="result">
+	    <tr><th class="result">Tudais-ch</th><th class="result">Rumantsch</th></tr>
+		{% for tud, rum in result %}
+			<tr><td class="result" align="right">{{tud}}</td><td class="result">{{rum}}<td>
+		{% endfor %}
+	    </table>
+	{% endifequal %}
 </body>
 </html>
