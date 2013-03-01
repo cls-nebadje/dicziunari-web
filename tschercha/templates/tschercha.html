@@ -2,10 +2,32 @@
 <head>
 	<title>Dicziunari Tschercha</title>
 	<style>
-		table.result { background #fff; border-collapse: collapse; }
-		th.result, td.result { border: 1px #000 solid; padding: 3; padding: 2px 10px 2px 10px /*top right bottom left*/;}
-		th.result { background: #eee; }
-		td {padding-right: 15px; padding-left: 15px; }
+		body {
+			font-family:"arial","sans-serif";
+			font-size: 90%;
+		}
+		table.result {
+			background #fff;
+			border-collapse: collapse;
+		}
+		th.result, td.result {
+			border: 1px #000 solid;
+			padding: 2px 10px 2px 10px; /*top right bottom left*/
+			font-size: 90%;
+		}
+		th.result {
+			background: #eee;
+		}
+		td {
+			padding-right: 15px;
+			padding-left: 15px;
+			font-size: 90%;
+		}
+		#bottom-stuff {
+			position:absolute;
+			bottom:10;
+			font-size: 70%;
+		}
 	</style>
 	<script type="text/javascript">
 		function qualifyURL(url) {
@@ -60,23 +82,26 @@
 		Am displascha - ingüns resultats :(
 	{% else %}
 	    <table class="result">
-	    <tr><th class="result">Tudais-ch</th><th class="result">Rumantsch</th></tr>
+	    <tr><th class="result">Tudais-ch</th><th class="result">{{ idiom }}</th></tr>
 		{% for tud, rum in result %}
 			<tr><td class="result" align="right">{{tud}}</td><td class="result">{{rum}}<td>
 		{% endfor %}
 	    </table>
 	{% endifequal %}
 	
-	<br>
-	<br>
-	<br>
-	<br>
-	<a onclick="jsfunction" href="javascript:installSearchEngines();">Installar maschinas da tscherchar</a>
+
 	<link  rel="search" href="{{ STATIC_URL }}search-plugin-vallader.xml"
 	      type="application/opensearchdescription+xml" 
          title="Dicziunari Vallader" />
 	<link  rel="search" href="{{ STATIC_URL }}search-plugin-puter.xml"
 	      type="application/opensearchdescription+xml" 
          title="Dicziunari Puter" />
+         
+	<div id="bottom-stuff">
+		<form action="javascript:installSearchEngines();">
+		    <input type="submit" value="Installar aint il navigatur">
+		</form>
+		Copyright &copy; cls et al 2013 and following. All other trademarks, copyrights, contents are property of their respective owners. 
+	</div>
 </body>
 </html>

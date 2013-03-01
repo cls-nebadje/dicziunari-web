@@ -5,7 +5,9 @@
   <ShortName>Dicziunari Vd/Td</ShortName>
   <Description>Dicziunari Vallader/Tudais-ch</Description>
   <InputEncoding>UTF-8</InputEncoding>
+  <Image height="16" width="16" type="image/x-icon">http://www.nebadje.org/favicon.ico</Image>
   <Url method="get"
          type="text/html"
-     template="http://nerdtalk.ddns.info/tschercha/?puter=false&amp;term={searchTerms}"/>
+     template="http://nerdtalk.ddns.info/tschercha/?idiom=vallader&amp;term={searchTerms}"/>
+  <moz:SearchForm>http://nerdtalk.ddns.info/tschercha?idiom=vallader</moz:SearchForm>
 </OpenSearchDescription>

@@ -5,7 +5,9 @@
   <ShortName>Dicziunari Pt/Td</ShortName>
   <Description>Dicziunari Puter/Tudais-ch</Description>
   <InputEncoding>UTF-8</InputEncoding>
+  <Image height="16" width="16" type="image/x-icon">http://www.nebadje.org/favicon.ico</Image>
   <Url method="get"
          type="text/html"
-     template="http://nerdtalk.ddns.info/tschercha/?puter=true&amp;term={searchTerms}"/>
+     template="http://nerdtalk.ddns.info/tschercha/?idiom=puter&amp;term={searchTerms}"/>
+  <moz:SearchForm>http://nerdtalk.ddns.info/tschercha?idiom=puter</moz:SearchForm>
 </OpenSearchDescription>
