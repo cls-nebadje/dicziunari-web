@@ -45,7 +45,8 @@ def search(data):
     else:
         return []
     
-    sql = "SELECT m, n FROM dicziunari WHERE m LIKE '%%%s%%' OR n LIKE '%%%s%%'" % (query, query)
+    limit = 200
+    sql = "SELECT m, n FROM dicziunari WHERE m LIKE '%%%s%%' OR n LIKE '%%%s%%' LIMIT 0, %i" % (query, query, limit)
     cursor.execute(sql)
     res = cursor.fetchall()
 
@@ -59,7 +60,6 @@ def tschercha(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
         if form.is_valid():
-            print form.cleaned_data
             idiom = form.cleaned_data["idiom"]
             result = search(form.cleaned_data)
     else:

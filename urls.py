@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('registration.urls')),
 
     url(r'^tschercha/', include('tschercha.urls')),
+    url(r'^$', 'tschercha.views.tschercha', name='tschercha'),
 )
