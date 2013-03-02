@@ -50,6 +50,36 @@
 			padding-left: 15px;
 			font-size: 90%;
 		}
+		.geschlecht, .gener {
+			color: #666666;
+			font-style: italic;
+		}
+		.bereich, .chomp {
+			color: #666666;
+		}
+		.wort, .pled {
+		}
+		
+		a.xref:link, a.xref:visited {
+			text-decoration:none;
+			color:#000000;
+			font-style: oblique;
+		}
+		a.xref:hover, a.xref:active {
+			text-decoration:underline;
+			color:#000000;
+			font-style: oblique;
+		}
+
+		a.clipb:link, a.clipb:visited {
+			text-decoration:none;
+			color:#000000;
+		}
+		a.clipbf:hover, a.clipb:active {
+			text-decoration:underline;
+			color:#000000;
+		}
+		
 	</style>
 	<script type="text/javascript">
 		function qualifyURL(url) {
@@ -83,6 +113,9 @@
 			element.value = '';
 			element.value = val;
 		}
+		function clipb (text) {
+			window.prompt ("Copchar al arcun d'immez: Ctrl+C, Enter", text);
+		}
 	</script>
 </head>
 <body>
@@ -113,12 +146,12 @@
 		    
 			<h3>Resultats</h3>
 			{% ifequal result|length 0 %}
-				Am displascha - ingüns resultats :(
+				Am displascha - ingüns resultats.
 			{% else %}
 			    <table class="result">
 			    <tr><th class="result">Tudais-ch</th><th class="result">{{ idiom }}</th></tr>
 				{% for tud, rum in result %}
-					<tr><td class="result" align="right">{{tud}}</td><td class="result">{{rum}}<td>
+					<tr><td class="result">{{tud|safe}}</td><td class="result">{{rum|safe}}<td>
 				{% endfor %}
 			    </table>
 			{% endifequal %}
