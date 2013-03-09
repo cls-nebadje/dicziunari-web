@@ -1,7 +1,25 @@
 {% extends "base.html" %}
 {% block title %} Login {% endblock %}
-{% block content %}
+{% block head %}
+	<style type="text/css">
+		td {
+			padding-top: 3px;
+			padding-bottom: 3px;
+			padding-right: 15px;
+			padding-left: 15px;
+			font-size: 90%;
+		}
+	</style>
+	<!-- FURTHER REGISTRATION TEMPLATES:
+	https://github.com/yourcelf/django-registration-defaults/tree/master/registration_defaults/templates/registration
+	-->
+{% endblock %}
 
+{% block content %}
+	<h2>Dicziunari {Vallader, Puter}/Tudais-ch</h2>
+	Pel mumaint il dicziunari es privat ed i fa dabsögn da s'annunzchar: 
+	<br>
+	<br>
    <div id="text">
         <table>
           <form action="" method="post">
@@ -15,7 +33,8 @@
                 <td><input type="password" name="password" value="" id="password"></td>
             </tr>
             <tr>
-                <td><input type="submit" value="Login" />
+            	<td></td>
+                <td align="right"><input type="submit" value="Login" />
             {% if next %}
                 <input type="hidden" name="next" value="{{ next }}" /></td>
             {% else %}
@@ -30,4 +49,8 @@
         <p class="error">User or password incorrect</p>
       {% endif %}
     </div>
+{% endblock %}
+
+{% block footer %}
+<br><br><br><br>
 {% endblock %}

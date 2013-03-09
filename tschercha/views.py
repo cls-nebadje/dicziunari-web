@@ -90,9 +90,11 @@ def tschercha(request):
 
     return render(request,
                   'tschercha.html',
-                  {'form': form,
-                   'result':result,
-                   'idiom' : IDIOM_NAMES[idiom]})
+                  {'form'   : form,
+                   'result' : result,
+                   'idiom'  : IDIOM_NAMES[idiom],
+                   'user'   : user(request),
+                   })
 
 def sqlLikeWithSearchMode(mode, query):
     if mode == SEARCH_MODE_EXACT:
@@ -173,3 +175,10 @@ def search(data):
         res.append((" ".join(de), " ".join(rum)))
         
     return res
+
+def user(request):
+    if hasattr(request, 'user'):
+        print request.user.username
+        return request.user.username
+    return "anonim"
+

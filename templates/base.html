@@ -1,11 +1,18 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
     <head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <title>{% block title %}{% endblock %}</title>
+		<link href="{{ STATIC_URL }}base.css" rel="stylesheet" type="text/css">
 		{% block head %}{% endblock %}
     </head>
-    <body>
-        {% block content %}{% endblock %}
+	<body>    
+	    <div id="wrapper">
+			<div id="_header"><div id="header">{% block header %}{% endblock %}</div></div>
+			<div id="_content"><div id="content">{% block content %}{% endblock %}</div></div>
+			<div id="_footer"><div id="footer">{% block footer %}{% endblock %}
+			Copyright &copy; cls et al 2013 and following. All other trademarks, copyrights, contents are property of their respective owners.
+			</div></div>
+		</div>
     </body>
 </html>

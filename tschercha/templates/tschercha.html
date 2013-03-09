@@ -1,188 +1,60 @@
-<html>
-<head>
-	<title>Dicziunari {Vallader, Puter}/Tudais-ch</title>
-	<style>
-		body {
-			font-family:"arial","sans-serif";
-			font-size: 90%;
-			margin:0;
-			padding:0;
-			height:100%;
-		}
-		#wrapper {
-			min-height:100%;
-			position:relative;
-		}
-		#header {
-			padding:3px;
-			background:#ee5;
-		}
-		#content {
-			padding:10px;
-			padding-bottom:100px; /* Height of the footer element plus its padding */
-		}
-		#footer {
-			padding: 10px;
-			padding-bottom:0px;
-			font-size: 80%;
-			width:100%;
-			height:80px;
-			position:absolute;
-			bottom:0;
-			left:0;
-			background:#ee5;
-		}
-		table.result {
-			border-collapse: collapse;
-		}
-		th.result, td.result {
-			border: 1px #000 solid;
-			padding: 2px 10px 2px 10px; /*top right bottom left*/
-			font-size: 90%;
-		}
-		th.result {
-			background: #ee5;
-		}
-		td {
-			padding-top: 3px;
-			padding-bottom: 3px;
-			padding-right: 15px;
-			padding-left: 15px;
-			font-size: 90%;
-		}
-		.geschlecht, .gener {
-			color: #666666;
-			font-style: italic;
-		}
-		.bereich, .chomp {
-			color: #666666;
-		}
-		.wort, .pled {
-		}
-		
-		a.xref:link, a.xref:visited {
-			text-decoration:none;
-			color:#000000;
-			font-style: oblique;
-		}
-		a.xref:hover, a.xref:active {
-			text-decoration:underline;
-			color:#000000;
-			font-style: oblique;
-		}
+{% extends "base.html" %}
+{% load i18n %}
 
-		a.clipb:link, a.clipb:visited {
-			text-decoration:none;
-			color:#000000;
-		}
-		a.clipbf:hover, a.clipb:active {
-			text-decoration:underline;
-			color:#000000;
-		}
-		#id_idiom, #id_mode, #id_direction {
-			width: 180px;
-			font-style: oblique;
-		}
-		#id_term {
-			width: 300px;
-		}
-		table.input, th {
-			font-weight:normal;
-			text-align: left;
-		}
-	</style>
-	<script type="text/javascript">
-		function qualifyURL(url) {
-			var a = document.createElement('a');
-			a.href = url;
-			return a.href;
-		}
-		function installSearchEngine(engine) {
-			if (window.external && ("AddSearchProvider" in window.external)) {
-				// Firefox 2 and IE 7, OpenSearch
-				window.external.AddSearchProvider(qualifyURL(engine));
-			} else {
-				// No search engine support (IE 6, Opera, etc).
-				alert("Ingün sustegn per maschinas da tscherchar.");
+{% block title %}Dicziunari {Vallader, Puter}/Tudais-ch{% endblock %}
+{% block head %}
+		<link href="{{ STATIC_URL }}tschercha.css" rel="stylesheet" type="text/css">
+		<script type="text/javascript" src="{{ STATIC_URL }}tschercha.js" charset="UTF-8"></script>
+		<script type="text/javascript">
+			window.onload = function() {
+				var element = document.getElementById("{{ form.term.auto_id }}")
+				element.focus()
+				var val = element.value;
+				element.value = '';
+				element.value = val;
 			}
-		}
-		function installSearchEnginePuter() {
-			installSearchEngine("{{ STATIC_URL }}search-plugin-puter.xml");
-		}
-		function installSearchEngineVallader() {
-			installSearchEngine("{{ STATIC_URL }}search-plugin-vallader.xml");
-		}
-		function installSearchEngines() {
-			installSearchEngineVallader();
-			installSearchEnginePuter();
-		}
-		window.onload = function() {
-			var element = document.getElementById("{{ form.term.auto_id }}")
-			element.focus()
-			var val = element.value;
-			element.value = '';
-			element.value = val;
-		}
-		function clipb (text) {
-			window.prompt ("Copchar alla memoria d'immez: Ctrl+C, Enter/Esc", text);
-		}
-	</script>
-</head>
-<body>
-    <div id="wrapper">
-	    <div id="header"></div>
-	    <div id="content">
-	
-			<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-			<!--
-				<link rel="stylesheet" type="text/css" href="/media/css/base.css" />
-			-->
-			<h2>Dicziunari {Vallader, Puter}/Tudais-ch</h2>
-			<!--
-			<h3>Tschercha</h3>
-			-->
-			{% if form.errors %}
-				<p style="color: red;">
-				Please correct the error{{ form.errors|pluralize }} below.
-				</p>
-			{% endif %}
-		
-			<form action="" method="post">
-				{% csrf_token %}
-				<table class="input">
-					{{ form.as_table }}
-					<tr><td></td><td align="right"><input type="submit" value="Tschercha!"></td>
-				</table>
-			</form>
-		    <!--
-			<h3>Resultats</h3>
-			-->
-			{% ifequal result|length 0 %}
-				I'm displascha - ingüns resultats.
-			{% else %}
-			    <table class="result">
-			    <tr><th class="result">Tudais-ch</th><th class="result">{{ idiom }}</th></tr>
-				{% for tud, rum in result %}
-					<tr><td class="result">{{tud|safe}}</td><td class="result">{{rum|safe}}<td>
-				{% endfor %}
-			    </table>
-			{% endifequal %}
+		</script>
+{% endblock %}
+{% block header %}
+		<div style="text-align:right">{{ user }} | <a href="/accounts/logout/">logout</a></div>
+{% endblock %}
+{% block content %}
+				<h2>Dicziunari {Vallader, Puter}/Tudais-ch</h2>
+
+				{% if form.errors %}
+					<p style="color: red;">
+					Please correct the error{{ form.errors|pluralize }} below.
+					</p>
+				{% endif %}
 			
-		
-			<link  rel="search" href="{{ STATIC_URL }}search-plugin-vallader.xml"
-			      type="application/opensearchdescription+xml" 
-		         title="Dicziunari Vallader" />
-			<link  rel="search" href="{{ STATIC_URL }}search-plugin-puter.xml"
-			      type="application/opensearchdescription+xml" 
-		         title="Dicziunari Puter" />
-		</div>
-			        
-	    <div id="footer">
-			<form action="javascript:installSearchEngines();">
-			    <input type="submit" value="Installar aint il navigatur">
-			</form>
-			Copyright &copy; cls et al 2013 and following. All other trademarks, copyrights, contents are property of their respective owners. 
-	    </div>
-    </div>
-</body>
-</html>
+				<form action="" method="post">
+					{% csrf_token %}
+					<table class="input">
+						{{ form.as_table }}
+						<tr><td></td><td align="right"><input type="submit" value="Tschercha!"/></td></tr>
+					</table>
+				</form>
+
+				{% ifequal result|length 0 %}
+					I'm displascha - ingüns resultats.
+				{% else %}
+				    <table class="result">
+				    <tr><th class="result">Tudais-ch</th><th class="result">{{ idiom }}</th></tr>
+					{% for tud, rum in result %}
+						<tr><td class="result">{{tud|safe}}</td><td class="result">{{rum|safe}}</td></tr>
+					{% endfor %}
+				    </table>
+				{% endifequal %}
+				
+				<link  rel="search" href="{{ STATIC_URL }}search-plugin-vallader.xml"
+				      type="application/opensearchdescription+xml" 
+			         title="Dicziunari Vallader" />
+				<link  rel="search" href="{{ STATIC_URL }}search-plugin-puter.xml"
+				      type="application/opensearchdescription+xml" 
+			         title="Dicziunari Puter" />
+{% endblock %}
+{% block footer %}
+				<form action="javascript:installSearchEngines();">
+				    <input type="submit" value="Installar aint il navigatur"/>
+				</form>
+{% endblock %}
