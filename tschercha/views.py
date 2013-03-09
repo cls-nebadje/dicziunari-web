@@ -14,10 +14,10 @@ from django.utils.http import urlquote
 IDIOM_VALLADER = '0'
 IDIOM_PUTER    = '1'
 IDIOM_DEFAULT  = IDIOM_VALLADER
-
-IDIOM_NAMES = {IDIOM_VALLADER : 'Vallader',
-               IDIOM_PUTER    : 'Puter',
-               }
+IDIOM_NAMES_T = ((IDIOM_VALLADER, 'Vallader'),
+                 (IDIOM_PUTER,    'Puter'),
+                 )
+IDIOM_NAMES = dict(IDIOM_NAMES_T)
 
 def idiomNameToIdiom(idiomName):
     idiom = IDIOM_DEFAULT
@@ -28,12 +28,73 @@ def idiomNameToIdiom(idiomName):
             break
     return idiom
 
+SEARCH_MODE_LIBERAL = '0'
+SEARCH_MODE_EXACT   = '1'
+SEARCH_MODE_START   = '2'
+SEARCH_MODE_END     = '3'
+SEARCH_MODE_DEFAULT = SEARCH_MODE_LIBERAL
+
+SEARCH_MODE_NAMES_T = ((SEARCH_MODE_LIBERAL, "Liberal"),
+                       (SEARCH_MODE_EXACT,   "Exact"),
+                       (SEARCH_MODE_START,   "Cumanzamaint"),
+                       (SEARCH_MODE_END,     "Fin"),
+                       )
+SEARCH_MODE_NAMES = dict(SEARCH_MODE_NAMES_T)
+
+def searchModeNameToSearchMode(searchModeName):
+    mode = SEARCH_MODE_DEFAULT
+    tmp = searchModeName.lower()
+    for i, n in SEARCH_MODE_NAMES.items():
+        if tmp == n.lower():
+            mode = i
+            break
+    return mode
+
 class SearchForm(forms.Form):
     term = forms.CharField(max_length=100, required=False)
+    mode = forms.ChoiceField(choices=SEARCH_MODE_NAMES_T, label="Möd")
     idiom = forms.ChoiceField(choices=IDIOM_NAMES.items())
-                  
+    
+@login_required
+def tschercha(request):
+    result = []
+    idiom = IDIOM_DEFAULT
+    mode = SEARCH_MODE_DEFAULT
+    
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            idiom = form.cleaned_data["idiom"]
+            mode = form.cleaned_data["mode"]
+            result = search(form.cleaned_data)
+    else:
+        idiom = idiomNameToIdiom(request.GET.get("idiom", ""))
+        mode = searchModeNameToSearchMode(request.GET.get("mode", ""))
+        d = {"term"  : request.GET.get("term", ""),
+             "idiom" : idiom,
+             "mode"  : mode,}
+        result = search(d)
+        form = SearchForm(initial=d)
+
+    return render(request,
+                  'tschercha.html',
+                  {'form': form,
+                   'result':result,
+                   'idiom' : IDIOM_NAMES[idiom]})
+
+def sqlLikeWithSearchMode(mode, query):
+    if mode == SEARCH_MODE_EXACT:
+        return "%s" % query
+    elif mode == SEARCH_MODE_START:
+        return "%s%%" % query
+    elif mode == SEARCH_MODE_END:
+        return "%%%s" % query
+    return "%%%s%%" % query
+
 def search(data):
     idiom = data["idiom"]
+    mode = data["mode"]
+    print mode
     if idiom == IDIOM_PUTER:
         dbPath = "database/Puter.db"
     else:
@@ -49,10 +110,11 @@ def search(data):
         return []
     
     limit = 200
+    likeStr = sqlLikeWithSearchMode(mode, query)
                            # de, beugungen, geschl, bereich 
                                             # rum, geschl, bereich.
     cursor.execute("SELECT m, tt, ww, ii,   n, ll, rr FROM dicziunari WHERE m LIKE ? OR n LIKE ? LIMIT 0, ?",
-                   ("%%%s%%" % query, "%%%s%%" % query, limit))
+                   (likeStr, likeStr, limit))
     rows = cursor.fetchall()
     res = []
     for row in rows:
@@ -90,27 +152,3 @@ def search(data):
         res.append((" ".join(de), " ".join(rum)))
         
     return res
-    
-@login_required
-def tschercha(request):
-    result = []
-    idiom = IDIOM_DEFAULT
-    
-    if request.method == 'POST':
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            idiom = form.cleaned_data["idiom"]
-            result = search(form.cleaned_data)
-    else:
-        idiom = idiomNameToIdiom(request.GET.get("idiom", ""))
-        d = {"term"  : request.GET.get("term", ""),
-             "idiom" : idiom}
-        result = search(d)
-        form = SearchForm(initial=d)
-
-    return render(request,
-                  'tschercha.html',
-                  {'form': form,
-                   'result':result,
-                   'idiom' : IDIOM_NAMES[idiom]})
-
