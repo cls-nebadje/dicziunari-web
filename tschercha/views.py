@@ -109,7 +109,6 @@ def search(data):
     idiom = data["idiom"]
     mode = data["mode"]
     direction = data["direction"]
-    print mode
     if idiom == IDIOM_PUTER:
         dbPath = "database/Puter.db"
     else:
@@ -178,7 +177,6 @@ def search(data):
 
 def user(request):
     if hasattr(request, 'user'):
-        print request.user.username
         return request.user.username
     return "anonim"
 
