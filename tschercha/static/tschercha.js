@@ -37,3 +37,4 @@ function installSearchEngines() {
 function clipb (text) {
 	window.prompt ("Copchar alla memoria d'immez: Ctrl+C, Enter/Esc", text);
 }
+

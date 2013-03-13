@@ -4,8 +4,32 @@
 {% block title %}Dicziunari {Vallader, Puter}/Tudais-ch{% endblock %}
 {% block head %}
 		<link href="{{ STATIC_URL }}tschercha.css" rel="stylesheet" type="text/css">
+
+		{{ form.media.css }}
+		{% load selectable_tags %}
+		{% include_jquery_libs %}
+		{% include_ui_theme %}
+		{{ form.media.js }}
+		
 		<script type="text/javascript" src="{{ STATIC_URL }}tschercha.js" charset="UTF-8"></script>
 		<script type="text/javascript">
+			$(document).ready(function() {
+			    $(':input[name=term]').bind('djselectableselect', function(event, ui) {
+			        $(this).parents("form").submit();
+			    });
+			    
+			    /* Hack for dynamic suggestion imitation - remove when suggestion source is switched dynamically. */
+			    $(':input[name=direction]').bind('change', function(event, ui) {
+			        $(this).parents("form").submit();
+			    });
+			    $(':input[name=idiom]').bind('change', function(event, ui) {
+			        $(this).parents("form").submit();
+			    });
+			    $(':input[name=mode]').bind('change', function(event, ui) {
+			        $(this).parents("form").submit();
+			    });				
+			});
+			
 			window.onload = function() {
 				var element = document.getElementById("{{ form.term.auto_id }}")
 				element.focus()
@@ -13,7 +37,8 @@
 				element.value = '';
 				element.value = val;
 			}
-		</script>
+
+		</script>	    
 {% endblock %}
 {% block header %}
 		<div style="text-align:right">{{ user }} | <a href="/accounts/logout/">logout</a></div>
