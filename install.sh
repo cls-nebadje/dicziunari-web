@@ -10,6 +10,7 @@ sudo aptitude install python-django
 sudo aptitude install python-django-registration
 sudo aptitude install python-pip
 sudo pip install django-selectable
+#sudo easy_install spawning
 
 git submodule init
 git submodule update
