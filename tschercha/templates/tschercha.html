@@ -28,7 +28,7 @@
 {% endcomment %}
 {% load i18n %}
 
-{% block title %}Dicziunari {Vallader, Puter}/Tudais-ch{% endblock %}
+{% block title %}Dicziunari{% endblock %}
 {% block head %}
 		<link rel="shortcut icon" href="{{ STATIC_URL }}tschercha.ico" />
 		<link href="{{ STATIC_URL }}tschercha.css" rel="stylesheet" type="text/css">
@@ -72,7 +72,7 @@
 		<div style="text-align:right">{{ user }} | <a href="/accounts/logout/">logout</a></div>
 {% endblock %}
 {% block content %}
-				<h2>Dicziunari {Vallader, Puter}/Tudais-ch</h2>
+				<h2>Dicziunari</h2>
 
 				{% if form.errors %}
 					<p style="color: red;">
