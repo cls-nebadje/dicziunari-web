@@ -43,11 +43,11 @@ td {
 	padding-left: 15px;
 	font-size: 90%;
 }
-.geschlecht, .gener {
+.geschl, .gener {
 	color: #666666;
 	font-style: italic;
 }
-.bereich, .chomp {
+.anmerk, .annot {
 	color: #666666;
 }
 .wort, .pled {

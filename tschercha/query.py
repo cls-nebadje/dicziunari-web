@@ -40,9 +40,11 @@ def nameToId(default, namedict):
 
 IDIOM_VALLADER = '0'
 IDIOM_PUTER    = '1'
+IDIOM_GRISCHUN = '2'
 IDIOM_DEFAULT  = IDIOM_VALLADER
 IDIOM_NAMES_T = ((IDIOM_VALLADER, 'Vallader'),
                  (IDIOM_PUTER,    'Puter'),
+                 (IDIOM_GRISCHUN, 'Grischun')
                  )
 IDIOM_NAMES = dict(IDIOM_NAMES_T)
 idiomNameToIdiom = nameToId(IDIOM_DEFAULT, IDIOM_NAMES)
@@ -87,6 +89,8 @@ def search(data):
     direction = data["direction"]
     if idiom == IDIOM_PUTER:
         dbPath = "database/Puter.db"
+    if idiom == IDIOM_GRISCHUN:
+        dbPath = "database/Grischun.db"
     else:
         dbPath = "database/Vallader.db"
     
@@ -101,51 +105,63 @@ def search(data):
     
     limit = 200
     likeStr = sqlLikeWithSearchMode(mode, query)
-    if direction == SEARCH_DIRECTION_BI_DIR:
-        #                      de, beugungen, geschl, bereich 
-        #                                       rum, geschl, bereich.
-        cursor.execute("SELECT m, tt, ww, ii,   n, ll, rr FROM dicziunari WHERE m LIKE ? OR n LIKE ? LIMIT 0, ?",
-                       (likeStr, likeStr, limit))
-    elif direction == SEARCH_DIRECTION_DEU_RUM:
-        cursor.execute("SELECT m, tt, ww, ii,   n, ll, rr FROM dicziunari WHERE m LIKE ? LIMIT 0, ?",
-                       (likeStr, limit))
-    elif direction == SEARCH_DIRECTION_RUM_DEU:
-        cursor.execute("SELECT m, tt, ww, ii,   n, ll, rr FROM dicziunari WHERE n LIKE ? LIMIT 0, ?",
-                       (likeStr, limit))
-        
-    rows = cursor.fetchall()
-    res = []
-    for row in rows:
+    if IDIOM_GRISCHUN:
         keys = [(u'wort',       u'',  u'' ),
-                (u'beugung',    u'',  u'' ),
-                (u'geschlecht', u'{', u'}'),
-                (u'bereich',    u'[', u']'),
+                (u'geschl',     u'{', u'}'),
+                (u'anmerk',     u'[', u']'),
                 (u'pled',       u'',  u'' ),
                 (u'gener',      u'{', u'}'),
-                (u'chomp',      u'[', u']'),]
+                (u'annot',      u'[', u']'),]
+        cols = 'wort, geschl, anmerk, pled, gener, annot'
+        splitIdx = 3
+    else:
+        keys = [(u'wort',       u'',  u'' ),
+                (u'beug',       u'',  u'' ),
+                (u'geschl',     u'{', u'}'),
+                (u'anmerk',     u'[', u']'),
+                (u'pled',       u'',  u'' ),
+                (u'gener',      u'{', u'}'),
+                (u'annot',      u'[', u']'),]
+        cols = 'wort, beug, geschl, anmerk, pled, gener, annot'
+        splitIdx = 4
+    if direction == SEARCH_DIRECTION_BI_DIR:
+        sql = "SELECT %s FROM dicziunari WHERE wort LIKE ? OR pled LIKE ? LIMIT 0, ?"
+        sqlData = (likeStr, likeStr, limit)
+    elif direction == SEARCH_DIRECTION_DEU_RUM:
+        sql = "SELECT %s FROM dicziunari WHERE wort LIKE ? LIMIT 0, ?"
+        sqlData = (likeStr, limit)
+    elif direction == SEARCH_DIRECTION_RUM_DEU:
+        sql = "SELECT %s FROM dicziunari WHERE pled LIKE ? LIMIT 0, ?"
+        sqlData = (likeStr, limit)
+    cursor.execute(sql % cols, sqlData)
+    rows = cursor.fetchall()
+    res = []
+ 
+    for row in rows:
         def fmt(out, key, inp):
-            inp = inp.strip()
-            if inp is not None and len(inp) > 0:
-                txt = u'<span class="%s">%s%s%s</span>' % (key[0], key[1], escape(inp), key[2])
-                if key[0] in [u'wort', u'pled']:
-                    # TODO regex "cf. auch: vergleichen" (low prio - only 5 words)
-                    p = inp.find(u'cf. ')
-                    if p != -1:
-                        newTerm = inp[p+3:].strip()
-                        # We should generate the relative path by our app url part
-                        # and not hard-code it here
-                        txt = '<a class="xref" href="/tschercha/?idiom=%s&term=%s">%s</a>' % \
-                               (IDIOM_NAMES[idiom], urlquote(newTerm), txt)
-                    else:
-                        cbTxt = inp.replace("\"", "")
-                        txt = '<a class="clipb" href=\'javascript:clipb("%s")\'>%s</a>' % (cbTxt, txt)
-                out.append(txt)
+            if inp is not None:
+                inp = inp.strip()
+                if len(inp) > 0:
+                    txt = u'<span class="%s">%s%s%s</span>' % (key[0], key[1], escape(inp), key[2])
+                    if key[0] in [u'wort', u'pled']:
+                        # TODO regex "cf. auch: vergleichen" (low prio - only 5 words)
+                        p = inp.find(u'cf. ')
+                        if p != -1:
+                            newTerm = inp[p+3:].strip()
+                            # We should generate the relative path by our app url part
+                            # and not hard-code it here
+                            txt = '<a class="xref" href="/tschercha/?idiom=%s&term=%s">%s</a>' % \
+                                   (IDIOM_NAMES[idiom], urlquote(newTerm), txt)
+                        else:
+                            cbTxt = inp.replace("\"", "")
+                            txt = '<a class="clipb" href=\'javascript:clipb("%s")\'>%s</a>' % (cbTxt, txt)
+                    out.append(txt)
                     
         de = []
         rum = []
-        for i in range(4):
+        for i in range(splitIdx):
             fmt(de, keys[i], row[i])
-        for i in range(4, len(row)):
+        for i in range(splitIdx, len(row)):
             fmt(rum, keys[i], row[i])
         res.append((" ".join(de), " ".join(rum)))
         
@@ -167,10 +183,10 @@ def suggestions(idiom, direction, term, limit=20):
     likeStr = "%s%%" % term
 
     if direction == SEARCH_DIRECTION_DEU_RUM:
-        cursor.execute("SELECT m FROM dicziunari WHERE m LIKE ? GROUP BY m LIMIT 0, ?",
+        cursor.execute("SELECT wort FROM dicziunari WHERE wort LIKE ? GROUP BY wort LIMIT 0, ?",
                        (likeStr, limit))
     else: #if direction == SEARCH_DIRECTION_RUM_DEU:
-        cursor.execute("SELECT n FROM dicziunari WHERE n LIKE ? GROUP BY n LIMIT 0, ?",
+        cursor.execute("SELECT pled FROM dicziunari WHERE pled LIKE ? GROUP BY pled LIMIT 0, ?",
                        (likeStr, limit))
         
     rows = cursor.fetchall()

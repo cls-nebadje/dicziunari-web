@@ -37,13 +37,15 @@ from tschercha.query import search, \
                             idiomNameToIdiom, \
                             searchModeNameToSearchMode, \
                             searchDirNameToSearchDir, \
+                            IDIOM_GRISCHUN, IDIOM_PUTER, \
                             IDIOM_DEFAULT, IDIOM_NAMES, IDIOM_NAMES_T, \
                             SEARCH_MODE_DEFAULT, SEARCH_MODE_NAMES_T, \
-                            SEARCH_DIRECTION_DEFAULT, SEARCH_DIRECTION_NAMES_T,\
-    IDIOM_VALLADER, SEARCH_DIRECTION_DEU_RUM, SEARCH_DIRECTION_RUM_DEU
+                            SEARCH_DIRECTION_DEFAULT, SEARCH_DIRECTION_NAMES_T, \
+                            SEARCH_DIRECTION_DEU_RUM, SEARCH_DIRECTION_RUM_DEU
 
 from tschercha.lookups import LookupDeuVal, LookupValDeu, LookupBidirVal, \
-                              LookupDeuPut, LookupPutDeu, LookupBidirPut
+                              LookupDeuPut, LookupPutDeu, LookupBidirPut, \
+                              LookupDeuGri, LookupGriDeu, LookupBidirGri
 
 # Note: For each lookup we need a new form!
 class SearchForm(forms.Form):
@@ -65,22 +67,36 @@ class SearchFormPutDeu(SearchForm):
     term = forms.CharField(max_length=100, widget=selectable.forms.AutoCompleteWidget(LookupPutDeu), required=False)
 class SearchFormPut(SearchForm):
     term = forms.CharField(max_length=100, widget=selectable.forms.AutoCompleteWidget(LookupBidirPut), required=False)
+
+class SearchFormDeuGri(SearchForm):
+    term = forms.CharField(max_length=100, widget=selectable.forms.AutoCompleteWidget(LookupDeuGri), required=False)
+class SearchFormGriDeu(SearchForm):
+    term = forms.CharField(max_length=100, widget=selectable.forms.AutoCompleteWidget(LookupGriDeu), required=False)
+class SearchFormGri(SearchForm):
+    term = forms.CharField(max_length=100, widget=selectable.forms.AutoCompleteWidget(LookupBidirGri), required=False)
     
 def formForIdiomAndDirection(idiom, direction):
-    if idiom == IDIOM_VALLADER:
-        if direction == SEARCH_DIRECTION_RUM_DEU:
-            return SearchFormValDeu
-        elif direction == SEARCH_DIRECTION_DEU_RUM:
-            return SearchFormDeuVal
-        else:
-            return SearchFormVal
-    else:
+    if idiom == IDIOM_PUTER:
         if direction == SEARCH_DIRECTION_RUM_DEU:
             return SearchFormPutDeu
         elif direction == SEARCH_DIRECTION_DEU_RUM:
             return SearchFormDeuPut
         else:
             return SearchFormPut
+    elif idiom == IDIOM_GRISCHUN:
+        if direction == SEARCH_DIRECTION_RUM_DEU:
+            return SearchFormGriDeu
+        elif direction == SEARCH_DIRECTION_DEU_RUM:
+            return SearchFormDeuGri
+        else:
+            return SearchFormGri
+    else:
+        if direction == SEARCH_DIRECTION_RUM_DEU:
+            return SearchFormValDeu
+        elif direction == SEARCH_DIRECTION_DEU_RUM:
+            return SearchFormDeuVal
+        else:
+            return SearchFormVal
         
 @login_required
 def tschercha(request):

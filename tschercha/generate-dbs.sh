@@ -28,6 +28,7 @@
 #
 
 cd database
-./dicziunari.py -p -s
-./dicziunari.py -v -s
+./dicziunari.py -v -s -c "{m:wort,T:beug,W:geschl,I:anmerk,n:pled,L:gener,R:annot}"
+./dicziunari.py -p -s -c "{m:wort,T:beug,W:geschl,I:anmerk,n:pled,L:gener,R:annot}"
+./dicziunari.py -g -s -c "{B:wort,D:geschl,G:anmerk,I:pled,K:gener,Q:annot}"
 cd ..

@@ -30,7 +30,7 @@ from tschercha.query import suggestions, \
                             SEARCH_DIRECTION_DEU_RUM, \
                             SEARCH_DIRECTION_RUM_DEU, \
                             IDIOM_VALLADER, \
-                            IDIOM_PUTER
+                            IDIOM_PUTER, IDIOM_GRISCHUN
 
 class LookupDeuVal(LookupBase):
     def get_query(self, request, term):
@@ -88,6 +88,34 @@ class LookupBidirPut(LookupBase):
         sugg.sort()
         return sugg
 
+class LookupDeuGri(LookupBase):
+    def get_query(self, request, term):
+        return suggestions(idiom=IDIOM_GRISCHUN,
+                           direction=SEARCH_DIRECTION_DEU_RUM,
+                           term=term,
+                           limit=10)
+
+class LookupGriDeu(LookupBase):
+    def get_query(self, request, term):
+        return suggestions(idiom=IDIOM_GRISCHUN,
+                           direction=SEARCH_DIRECTION_RUM_DEU,
+                           term=term,
+                           limit=10)
+
+class LookupBidirGri(LookupBase):
+    def get_query(self, request, term):
+        suggRum = suggestions(idiom=IDIOM_GRISCHUN,
+                           direction=SEARCH_DIRECTION_RUM_DEU,
+                           term=term,
+                           limit=7)
+        suggDeu = suggestions(idiom=IDIOM_GRISCHUN,
+                              direction=SEARCH_DIRECTION_DEU_RUM,
+                              term=term,
+                              limit=7)
+        sugg = suggRum + suggDeu
+        sugg.sort()
+        return sugg
+
 registry.register(LookupDeuVal)
 registry.register(LookupValDeu)
 registry.register(LookupBidirVal)
@@ -95,3 +123,7 @@ registry.register(LookupBidirVal)
 registry.register(LookupDeuPut)
 registry.register(LookupPutDeu)
 registry.register(LookupBidirPut)
+
+registry.register(LookupDeuGri)
+registry.register(LookupGriDeu)
+registry.register(LookupBidirGri)
