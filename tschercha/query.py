@@ -74,6 +74,46 @@ SEARCH_DIRECTION_NAMES_T = ((SEARCH_DIRECTION_BI_DIR, 'Bidirecziunal'),
 SEARCH_DIRECTION_NAMES = dict(SEARCH_DIRECTION_NAMES_T)
 searchDirNameToSearchDir = nameToId(SEARCH_DIRECTION_DEFAULT, SEARCH_DIRECTION_NAMES)
 
+global dbVallader, dbPuter, dbGrischun
+dbVallader = None
+dbPuter    = None
+dbGrischun = None
+def openDb(idiom):
+    global dbVallader, dbPuter, dbGrischun
+    if idiom == IDIOM_PUTER:
+        db = dbPuter
+    if idiom == IDIOM_GRISCHUN:
+        db = dbGrischun
+    else:
+        db = dbVallader
+    if db is not None:
+        return db
+    
+    if idiom == IDIOM_PUTER:
+        dbPath = "database/Puter.db"
+    if idiom == IDIOM_GRISCHUN:
+        dbPath = "database/Grischun.db"
+    else:
+        dbPath = "database/Vallader.db"
+    
+    print "Loading", dbPath
+    
+    dbPath = os.path.join(os.path.dirname(__file__), dbPath)
+    db = sqlite3.connect(dbPath)
+    cur = db.cursor()
+    cur.execute("PRAGMA synchronous = OFF")
+    cur.execute("PRAGMA temp_store = MEMORY")
+    cur.execute("PRAGMA cache_size = 50000")
+
+    if idiom == IDIOM_PUTER:
+        dbPuter = db
+    if idiom == IDIOM_GRISCHUN:
+        dbGrischun = db
+    else:
+        dbVallader = db
+    
+    return db
+
 def sqlLikeWithSearchMode(mode, query):
     if mode == SEARCH_MODE_EXACT:
         return "%s" % query
@@ -83,20 +123,12 @@ def sqlLikeWithSearchMode(mode, query):
         return "%%%s" % query
     return "%%%s%%" % query
 
+
 def search(data):
-    idiom = data["idiom"]
-    mode = data["mode"]
+        
+    idiom     = data["idiom"]
+    mode      = data["mode"]
     direction = data["direction"]
-    if idiom == IDIOM_PUTER:
-        dbPath = "database/Puter.db"
-    if idiom == IDIOM_GRISCHUN:
-        dbPath = "database/Grischun.db"
-    else:
-        dbPath = "database/Vallader.db"
-    
-    dbPath = os.path.join(os.path.dirname(__file__), dbPath)
-    conn = sqlite3.connect(dbPath)
-    cursor = conn.cursor()
 
     if len(data["term"]) > 0:
         query = data["term"]
@@ -133,6 +165,8 @@ def search(data):
     elif direction == SEARCH_DIRECTION_RUM_DEU:
         sql = "SELECT %s FROM dicziunari WHERE pled LIKE ? LIMIT 0, ?"
         sqlData = (likeStr, limit)
+        
+    cursor = openDb(idiom).cursor()
     cursor.execute(sql % cols, sqlData)
     rows = cursor.fetchall()
     res = []
@@ -168,17 +202,11 @@ def search(data):
     return res
 
 def suggestions(idiom, direction, term, limit=20):
+    
     if len(term) == 0:
         return []
     
-    if idiom == IDIOM_PUTER:
-        dbPath = "database/Puter.db"
-    else:
-        dbPath = "database/Vallader.db"
-    
-    dbPath = os.path.join(os.path.dirname(__file__), dbPath)
-    conn = sqlite3.connect(dbPath)
-    cursor = conn.cursor()
+    cursor = openDb(idiom).cursor()
 
     likeStr = "%s%%" % term
 
