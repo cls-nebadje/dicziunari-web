@@ -128,12 +128,14 @@ def tschercha(request):
 
     form = formForIdiomAndDirection(idiom, direction)(initial=d)
 
+    u = user(request)
+    print "user:", u
     return render(request,
                   'tschercha.html',
                   {'form'   : form,
                    'result' : result,
                    'idiom'  : IDIOM_NAMES[idiom],
-                   'user'   : user(request),
+                   'user'   : u,
                    })
 
 def user(request):
